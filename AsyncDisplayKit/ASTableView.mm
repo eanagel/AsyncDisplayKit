@@ -324,6 +324,17 @@ static BOOL _isInterceptedSelector(SEL sel)
   cell.backgroundColor = node.backgroundColor;
   cell.selectionStyle = node.selectionStyle;
 
+    /////// START DIRTY HACK, SHAME ON YOU //////////
+
+    if (cell.subviews.count > 1) {
+        UIView *view = cell.subviews[0];
+        if ( view.class == [UIView class] ) {
+            NSLog(@"FIXING: %@", NSStringFromCGRect(view.frame));
+            view.frame = CGRectZero;
+        }
+    }
+    /////// END DIRTY HACK, SHAME ON YOU ///////////
+    
   return cell;
 }
 
