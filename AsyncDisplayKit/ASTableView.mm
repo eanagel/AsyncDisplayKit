@@ -461,32 +461,36 @@ static BOOL _isInterceptedSelector(SEL sel)
 
 - (void)rangeController:(ASRangeController *)rangeController didInsertNodesAtIndexPaths:(NSArray *)indexPaths withAnimationOption:(ASDataControllerAnimationOptions)animationOption
 {
-  ASDisplayNodeAssertMainThread();
+    ASDisplayNodeAssertMainThread();
 
-  [super insertRowsAtIndexPaths:indexPaths withRowAnimation:(UITableViewRowAnimation)animationOption];
+    if(animationOption == UITableViewRowAnimationNone) { [UIView setAnimationsEnabled:NO]; };
+    [super insertRowsAtIndexPaths:indexPaths withRowAnimation:(UITableViewRowAnimation)animationOption];
+    if(animationOption == UITableViewRowAnimationNone) { [UIView setAnimationsEnabled:YES]; };
 }
 
 - (void)rangeController:(ASRangeController *)rangeController didDeleteNodesAtIndexPaths:(NSArray *)indexPaths withAnimationOption:(ASDataControllerAnimationOptions)animationOption
 {
-  ASDisplayNodeAssertMainThread();
-
-  [super deleteRowsAtIndexPaths:indexPaths withRowAnimation:(UITableViewRowAnimation)animationOption];
+    ASDisplayNodeAssertMainThread();
+    if(animationOption == UITableViewRowAnimationNone) { [UIView setAnimationsEnabled:NO]; };
+    [super deleteRowsAtIndexPaths:indexPaths withRowAnimation:(UITableViewRowAnimation)animationOption];
+    if(animationOption == UITableViewRowAnimationNone) { [UIView setAnimationsEnabled:YES]; };
 }
 
 - (void)rangeController:(ASRangeController *)rangeController didInsertSectionsAtIndexSet:(NSIndexSet *)indexSet withAnimationOption:(ASDataControllerAnimationOptions)animationOption
 {
-  ASDisplayNodeAssertMainThread();
-
-  [super insertSections:indexSet withRowAnimation:(UITableViewRowAnimation)animationOption];
+    ASDisplayNodeAssertMainThread();
+    if(animationOption == UITableViewRowAnimationNone) { [UIView setAnimationsEnabled:NO]; };
+    [super insertSections:indexSet withRowAnimation:(UITableViewRowAnimation)animationOption];
+    if(animationOption == UITableViewRowAnimationNone) { [UIView setAnimationsEnabled:YES]; };
 }
 
 - (void)rangeController:(ASRangeController *)rangeController didDeleteSectionsAtIndexSet:(NSIndexSet *)indexSet withAnimationOption:(ASDataControllerAnimationOptions)animationOption
 {
-  ASDisplayNodeAssertMainThread();
-
-  [super deleteSections:indexSet withRowAnimation:(UITableViewRowAnimation)animationOption];
+    ASDisplayNodeAssertMainThread();
+    if(animationOption == UITableViewRowAnimationNone) { [UIView setAnimationsEnabled:NO]; };
+    [super deleteSections:indexSet withRowAnimation:(UITableViewRowAnimation)animationOption];
+    if(animationOption == UITableViewRowAnimationNone) { [UIView setAnimationsEnabled:YES]; };
 }
-
 #pragma mark - ASDataControllerDelegate
 
 - (ASCellNode *)dataController:(ASDataController *)dataController nodeAtIndexPath:(NSIndexPath *)indexPath
