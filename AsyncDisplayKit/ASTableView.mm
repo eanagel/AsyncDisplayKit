@@ -118,6 +118,8 @@ static BOOL _isInterceptedSelector(SEL sel)
   BOOL _asyncDataFetchingEnabled;
 
   ASBatchContext *_batchContext;
+
+  NSIndexPath *_pendingVisibleIndexPath;
 }
 
 @property (atomic, assign) BOOL asyncDataSourceLocked;
@@ -383,6 +385,8 @@ static BOOL _isInterceptedSelector(SEL sel)
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
+  _pendingVisibleIndexPath = indexPath;
+
   [_rangeController visibleNodeIndexPathsDidChangeWithScrollDirection:self.scrollDirection];
 
   if ([_asyncDelegate respondsToSelector:@selector(tableView:willDisplayNodeForRowAtIndexPath:)]) {
@@ -392,6 +396,10 @@ static BOOL _isInterceptedSelector(SEL sel)
 
 - (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
+  if ([_pendingVisibleIndexPath isEqual:indexPath]) {
+    _pendingVisibleIndexPath = nil;
+  }
+
   [_rangeController visibleNodeIndexPathsDidChangeWithScrollDirection:self.scrollDirection];
 
   if ([_asyncDelegate respondsToSelector:@selector(tableView:didEndDisplayingNodeForRowAtIndexPath:)]) {
@@ -462,7 +470,21 @@ static BOOL _isInterceptedSelector(SEL sel)
 - (NSArray *)rangeControllerVisibleNodeIndexPaths:(ASRangeController *)rangeController
 {
   ASDisplayNodeAssertMainThread();
-  return [self indexPathsForVisibleRows];
+
+  NSArray *visibleIndexPaths = self.indexPathsForVisibleRows;
+
+  if ( _pendingVisibleIndexPath ) {
+    NSMutableSet *indexPaths = [NSMutableSet setWithArray:self.indexPathsForVisibleRows];
+
+    if ( [indexPaths containsObject:_pendingVisibleIndexPath]) {
+      _pendingVisibleIndexPath = nil; // once it has shown up in visibleIndexPaths, we can stop tracking it
+    } else {
+      [indexPaths addObject:_pendingVisibleIndexPath];
+      visibleIndexPaths = indexPaths.allObjects;
+    }
+  }
+
+  return visibleIndexPaths;
 }
 
 - (NSArray *)rangeController:(ASRangeController *)rangeController nodesAtIndexPaths:(NSArray *)indexPaths
