@@ -499,12 +499,14 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
 - (void)rangeControllerBeginUpdates:(ASRangeController *)rangeController
 {
   ASDisplayNodeAssertMainThread();
+  NSLog(@"rangeControllerBeginUpdates");
   [super beginUpdates];
 }
 
 - (void)rangeControllerEndUpdates:(ASRangeController *)rangeController completion:(void (^)(BOOL))completion
 {
   ASDisplayNodeAssertMainThread();
+  NSLog(@"rangeControllerEndUpdates");
   [super endUpdates];
 
   if (completion) {
@@ -576,6 +578,7 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
 - (void)rangeController:(ASRangeController *)rangeController didInsertNodesAtIndexPaths:(NSArray *)indexPaths withAnimationOptions:(ASDataControllerAnimationOptions)animationOptions
 {
   ASDisplayNodeAssertMainThread();
+  NSLog(@"rangeController:didInsertNodesAtIndexPaths:");
 
   BOOL preventAnimation = animationOptions == UITableViewRowAnimationNone;
   ASPerformBlockWithoutAnimation(preventAnimation, ^{
@@ -586,6 +589,7 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
 - (void)rangeController:(ASRangeController *)rangeController didDeleteNodesAtIndexPaths:(NSArray *)indexPaths withAnimationOptions:(ASDataControllerAnimationOptions)animationOptions
 {
   ASDisplayNodeAssertMainThread();
+  NSLog(@"rangeController:didDeleteNodesAtIndexPaths:");
 
   BOOL preventAnimation = animationOptions == UITableViewRowAnimationNone;
   ASPerformBlockWithoutAnimation(preventAnimation, ^{
@@ -596,6 +600,7 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
 - (void)rangeController:(ASRangeController *)rangeController didInsertSectionsAtIndexSet:(NSIndexSet *)indexSet withAnimationOptions:(ASDataControllerAnimationOptions)animationOptions
 {
   ASDisplayNodeAssertMainThread();
+  NSLog(@"rangeController:didInsertSectionsAtIndexSet:");
 
   BOOL preventAnimation = animationOptions == UITableViewRowAnimationNone;
   ASPerformBlockWithoutAnimation(preventAnimation, ^{
@@ -606,6 +611,7 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
 - (void)rangeController:(ASRangeController *)rangeController didDeleteSectionsAtIndexSet:(NSIndexSet *)indexSet withAnimationOptions:(ASDataControllerAnimationOptions)animationOptions
 {
   ASDisplayNodeAssertMainThread();
+  NSLog(@"rangeController:didDeleteSectionsAtIndexSet:");
 
   BOOL preventAnimation = animationOptions == UITableViewRowAnimationNone;
   ASPerformBlockWithoutAnimation(preventAnimation, ^{

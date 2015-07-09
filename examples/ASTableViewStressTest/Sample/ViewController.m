@@ -16,7 +16,7 @@
 
 #define NumberOfSections 10
 #define NumberOfRowsPerSection 20
-#define NumberOfReloadIterations 500
+#define NumberOfReloadIterations 5
 
 @interface ViewController () <ASTableViewDataSource, ASTableViewDelegate>
 {
@@ -115,7 +115,12 @@
     BOOL letRunloopProceed            = (arc4random_uniform(1) == 0 ? YES : NO);
     BOOL addIndexPaths                = (arc4random_uniform(1) == 0 ? YES : NO);
     BOOL useBeginEndUpdates           = (arc4random_uniform(2) == 0 ? YES : NO);
-    
+
+    useBeginEndUpdates= YES;
+
+    NSLog(@" ");
+    NSLog(@"*** Starting an iteration ***");
+
     if (useBeginEndUpdates) {
       [_tableView beginUpdates];
     }
@@ -153,6 +158,9 @@
       [_tableView endUpdates];
     }
   }
+
+  NSLog(@" ");
+  NSLog(@"*** Thrashing Test Complete ***");
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
