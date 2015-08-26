@@ -596,7 +596,41 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
     return; // if the asyncDataSource has become invalid while we are processing, ignore this request to avoid crashes
   }
 
+  NSIndexPath *top = _contentOffsetAdjustmentTopVisibleRow ?: self.indexPathsForVisibleRows.firstObject;
+
+  NSInteger numberOfSections = [_dataController numberOfSections];
+  for (NSInteger sectionIndex = 0; sectionIndex < numberOfSections; sectionIndex++) {
+    NSInteger numberOfRows = [_dataController numberOfRowsInSection:sectionIndex];
+
+    for (NSInteger rowIndex = 0; rowIndex < numberOfRows; rowIndex++) {
+      NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
+      ASCellNode *cell = (ASCellNode *)[_dataController nodeAtIndexPath:indexPath];
+
+      CGSize oldSize = cell.calculatedSize;
+      CGSize newSize = [cell measure:cell.constrainedSizeForCalculatedSize];
+      CGFloat delta = newSize.height - oldSize.height;
+
+      if (delta == 0) {
+        continue;  // no change in height
+      }
+
+      if (_automaticallyAdjustsContentOffset) {
+        if (indexPath.section < top.section || (indexPath.section == top.section && indexPath.row < top.row)) {
+          _contentOffsetAdjustment += delta;
+          LOG(@"endUpdates: need to adjust delta by %g (total: %g)", delta, _contentOffsetAdjustment);
+        } else {
+          LOG(@"endUpdates: resizing a cell by %g, no adjustment needed", delta);
+        }
+      } else {
+        LOG(@"endUpdates: resizing a cell by %g", delta);
+      }
+    }
+  }
+
   if (_automaticallyAdjustsContentOffset) {
+    if (_contentOffsetAdjustment != 0) {
+      animated = NO; // disable animations if we are adjusting the content offset
+    }
     [self endAdjustingContentOffset];
   }
 
