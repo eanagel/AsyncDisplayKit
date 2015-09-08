@@ -615,7 +615,7 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
       }
 
       if (_automaticallyAdjustsContentOffset) {
-        if (indexPath.section < top.section || (indexPath.section == top.section && indexPath.row < top.row)) {
+        if (indexPath.section < top.section || (indexPath.section == top.section && indexPath.row <= top.row)) {
           _contentOffsetAdjustment += delta;
           LOG(@"endUpdates: need to adjust delta by %g (total: %g)", delta, _contentOffsetAdjustment);
         } else {
@@ -624,6 +624,8 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
       } else {
         LOG(@"endUpdates: resizing a cell by %g", delta);
       }
+
+      [cell setNeedsLayout];
     }
   }
 
