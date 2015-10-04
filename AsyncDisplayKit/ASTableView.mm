@@ -479,10 +479,6 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
     node.displayedSize = node.calculatedSize;
   }
 
-  if (!CGSizeEqualToSize(node.displayedSize, node.calculatedSize)) {
-    NSLog(@"Height Mismatch for cell %zd:>%zd delta = %f", indexPath.section, indexPath.row, node.displayedSize.height - node.calculatedSize.height);
-  }
-
   return node.displayedSize.height;
 }
 
