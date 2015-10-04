@@ -474,7 +474,16 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   ASCellNode *node = [_dataController nodeAtIndexPath:indexPath];
-  return node.calculatedSize.height;
+
+  if (CGSizeEqualToSize(node.displayedSize, CGSizeZero)) {
+    node.displayedSize = node.calculatedSize;
+  }
+
+  if (!CGSizeEqualToSize(node.displayedSize, node.calculatedSize)) {
+    NSLog(@"Height Mismatch for cell %zd:>%zd delta = %f", indexPath.section, indexPath.row, node.displayedSize.height - node.calculatedSize.height);
+  }
+
+  return node.displayedSize.height;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -606,13 +615,19 @@ void ASPerformBlockWithoutAnimation(BOOL withoutAnimation, void (^block)()) {
       NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:sectionIndex];
       ASCellNode *cell = (ASCellNode *)[_dataController nodeAtIndexPath:indexPath];
 
-      CGSize oldSize = cell.calculatedSize;
+      if (CGSizeEqualToSize(cell.displayedSize, CGSizeZero)) {
+        continue; // a node we have never displayed (just inserted), ignode.
+      }
+
+      CGSize oldSize = cell.displayedSize;
       CGSize newSize = [cell measure:cell.constrainedSizeForCalculatedSize];
       CGFloat delta = newSize.height - oldSize.height;
 
       if (delta == 0) {
         continue;  // no change in height
       }
+
+      cell.displayedSize = newSize;
 
       if (_automaticallyAdjustsContentOffset) {
         if (indexPath.section < top.section || (indexPath.section == top.section && indexPath.row <= top.row)) {

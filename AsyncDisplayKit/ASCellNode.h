@@ -14,6 +14,7 @@
  */
 @interface ASCellNode : ASDisplayNode
 
+@property(nonatomic) CGSize displayedSize;
 /*
  * ASTableView uses these properties when configuring UITableViewCells that host ASCellNodes.
  */
