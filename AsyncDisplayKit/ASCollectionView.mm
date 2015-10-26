@@ -183,7 +183,13 @@ static BOOL _isInterceptedSelector(SEL sel)
 
 - (void)reloadDataWithCompletion:(void (^)())completion
 {
-  ASDisplayNodeAssert(self.asyncDelegate, @"ASCollectionView's asyncDelegate property must be set.");
+    if (!self.asyncDelegate || !self.asyncDataSource) {
+        if (completion) {
+            completion();
+        }
+        return ;
+    }
+
   ASDisplayNodePerformBlockOnMainThread(^{
     [super reloadData];
   });
