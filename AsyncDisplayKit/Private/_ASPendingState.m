@@ -796,4 +796,11 @@
     view.accessibilityIdentifier = accessibilityIdentifier;
 }
 
+- (void)dealloc
+{
+  CGColorRelease(backgroundColor);
+  CGColorRelease(shadowColor);
+  CGColorRelease(borderColor);
+}
+
 @end
