@@ -11,25 +11,44 @@
 #import "ASDisplayNode.h"
 #import "ASDisplayNode+Subclasses.h"
 #import "ASDisplayNodeInternal.h"
+#import "_ASDisplayView.h"
+
+@interface ASRangeHandlerRender ()
+@property (nonatomic,readonly) UIWindow *workingWindow;
+@end
 
 @implementation ASRangeHandlerRender
 
-+ (UIWindow *)workingWindow
+@synthesize workingWindow = _workingWindow;
+
+- (UIWindow *)workingWindow
 {
   ASDisplayNodeAssertMainThread();
-  
+
   // we add nodes' views to this invisible window to start async rendering
   // TODO: Replace this with directly triggering display https://github.com/facebook/AsyncDisplayKit/issues/315
-  static UIWindow *workingWindow = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    workingWindow = [[UIWindow alloc] initWithFrame:CGRectZero];
-    workingWindow.windowLevel = UIWindowLevelNormal - 1000;
-    workingWindow.userInteractionEnabled = NO;
-    workingWindow.hidden = YES;
-    workingWindow.alpha = 0.0;
-  });
-  return workingWindow;
+
+  if (!_workingWindow) {
+    _workingWindow = [[UIWindow alloc] initWithFrame:CGRectZero];
+    _workingWindow.windowLevel = UIWindowLevelNormal - 1000;
+    _workingWindow.userInteractionEnabled = NO;
+    _workingWindow.hidden = YES;
+    _workingWindow.alpha = 0.0;
+  }
+
+  return _workingWindow;
+}
+
+- (void)dealloc
+{
+  NSArray *views = [self.workingWindow.subviews copy];
+  for(_ASDisplayView *view in views) {
+    if (![view isKindOfClass:[_ASDisplayView class]]) {
+      continue;
+    }
+    ASDisplayNode *node = view.asyncdisplaykit_node;
+    [self node:node exitedRangeOfType:ASLayoutRangeTypeRender];
+  }
 }
 
 - (void)node:(ASDisplayNode *)node enteredRangeOfType:(ASLayoutRangeType)rangeType
@@ -40,7 +59,7 @@
   [node recursivelySetDisplaySuspended:NO];
 
   // add the node to an off-screen window to force display and preserve its contents
-  [[self.class workingWindow] addSubnode:node];
+  [[self workingWindow] addSubnode:node];
 }
 
 - (void)node:(ASDisplayNode *)node exitedRangeOfType:(ASLayoutRangeType)rangeType
