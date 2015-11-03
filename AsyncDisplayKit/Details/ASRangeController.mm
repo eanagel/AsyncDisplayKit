@@ -184,6 +184,7 @@
 
 - (void)dataController:(ASDataController *)dataController endUpdatesAnimated:(BOOL)animated completion:(void (^)(BOOL))completion {
   ASDisplayNodePerformBlockOnMainThread(^{
+    _rangeIsValid = NO;
     [_delegate rangeController:self endUpdatesAnimated:animated completion:completion];
   });
 }
